@@ -1,23 +1,140 @@
 aid: palebluedotai
 name: PaleBlueDot.AI
-description: 'PaleBlueDot.AI is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'PaleBlueDot AI is a Palo Alto, California headquartered AI compute and
+  intelligence platform that supplies GPU infrastructure, dedicated clusters and model
+  access at scale. Its developer-facing product is PBD TokenRouter (www.tokenrouter.com),
+  a unified AI model gateway that fronts 131 currently listed models from 22 vendors
+  behind a single API key and four wire formats - OpenAI Chat Completions, OpenAI Responses,
+  Anthropic Messages and Google Gemini generateContent - alongside image, audio and
+  video generation endpoints. TokenRouter layers cross-provider routing and failover,
+  prompt caching, per-key spend quotas, organization-level usage analytics and a stated
+  Zero Data Retention policy on top of those models, and publishes a documented Management
+  API for API key, quota, wallet and usage-log administration. The TokenRouter platform
+  is operated by Artemis Tokenrouter Inc.'
+image: https://www.palebluedot.ai/figma/pbd-home/logo.png
 url: https://raw.githubusercontent.com/api-evangelist/palebluedotai/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-26'
 modified: '2026-08-26'
 tags:
+- Artificial Intelligence
+- Machine Learning
+- Large Language Models
+- Inference
+- API Gateway
+- GPU
+- Cloud Computing
+- Model Routing
+- Compute
 - Company
-apis: []
+apis:
+- name: PBD TokenRouter Inference API
+  description: 'OpenAI-, Anthropic- and Gemini-compatible inference gateway. One API
+    key and one base URL route requests across 131 listed models from 22 vendors, with
+    cross-provider failover, prompt caching and per-key spend quotas. Supported wire
+    formats and their paths are published by the provider''s own anonymous /api/pricing
+    endpoint: openai POST /v1/chat/completions, openai-response POST /v1/responses,
+    anthropic POST /v1/messages, gemini POST /v1beta/models/{model}:generateContent,
+    image-generation POST /v1/images/generations, video-generation POST /v1/video/generations.'
+  humanURL: https://www.tokenrouter.com/docs/tokenrouter-feature-guide/
+  baseURL: https://api.tokenrouter.com/v1
+  tags:
+  - Inference
+  - Large Language Models
+  - API Gateway
+  properties:
+  - type: Documentation
+    url: https://www.tokenrouter.com/docs
+  - type: GettingStarted
+    url: https://www.tokenrouter.com/docs/tokenrouter-feature-guide/
+  - type: Authentication
+    url: authentication/palebluedotai-authentication.yml
+  - type: RateLimits
+    url: rate-limits/palebluedotai-rate-limits.yml
+  - type: Plans
+    url: plans/palebluedotai-plans-pricing.yml
+- name: PBD TokenRouter Management API
+  description: 'Administrative API for holders of a Management Key, covering API key
+    listing/enable/disable, per-key spend quota, personal and organization wallet balances,
+    and paginated or CSV usage-log export. Nine documented operations under the /api/management
+    route group, each with its own published per-key rate-limit window.'
+  humanURL: https://www.tokenrouter.com/docs/management-api-documentation/
+  baseURL: https://api.tokenrouter.com
+  tags:
+  - Administration
+  - Billing
+  - Usage Analytics
+  properties:
+  - type: APIReference
+    url: https://www.tokenrouter.com/docs/management-api-documentation/
+  - type: Authentication
+    url: authentication/palebluedotai-authentication.yml
+  - type: ErrorCatalog
+    url: errors/palebluedotai-error-codes.yml
+  - type: RateLimits
+    url: rate-limits/palebluedotai-rate-limits.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/palebluedotai-domain-security.yml
 - type: Website
-  url: https://forgeglobal.com/palebluedotai_stock/
+  url: https://www.palebluedot.ai/
+- type: DeveloperPortal
+  url: https://www.tokenrouter.com/
+- type: Documentation
+  url: https://www.tokenrouter.com/docs
+- type: APIReference
+  url: https://www.tokenrouter.com/docs/management-api-documentation/
+- type: GettingStarted
+  url: https://www.tokenrouter.com/docs/tokenrouter-feature-guide/
+- type: Blog
+  url: https://www.tokenrouter.com/blog
+- type: Pricing
+  url: https://www.tokenrouter.com/models/
+- type: Login
+  url: https://www.tokenrouter.com/console
+- type: TermsOfService
+  url: https://www.tokenrouter.com/docs/terms-of-use/
+- type: PrivacyPolicy
+  url: https://www.tokenrouter.com/docs/privacy-policy/
+- type: Support
+  url: https://www.tokenrouter.com/contact-us/
+- type: Community
+  url: https://discord.gg/XX57FY8S9X
+- type: GitHubOrganization
+  url: https://github.com/TokenRouter-Tools
+- type: ChangeLog
+  url: changelog/palebluedotai-changelog.yml
+- type: Compliance
+  url: security/palebluedotai-trust-center.yml
+- type: TrustCenter
+  url: security/palebluedotai-trust-center.yml
+- type: Authentication
+  url: authentication/palebluedotai-authentication.yml
+- type: ErrorCatalog
+  url: errors/palebluedotai-error-codes.yml
+- type: RateLimits
+  url: rate-limits/palebluedotai-rate-limits.yml
+- type: Plans
+  url: plans/palebluedotai-plans-pricing.yml
+- type: Conventions
+  url: conventions/palebluedotai-conventions.yml
+- type: Conformance
+  url: conformance/palebluedotai-conformance.yml
+- type: DataModel
+  url: data-model/palebluedotai-data-model.yml
+- type: Packages
+  url: packages/palebluedotai-packages.yml
+- type: LLMsTxt
+  url: llms/palebluedotai-llms.txt
+x-enrichment:
+  date: '2026-08-26'
+  status: enriched
+  artifacts_added: 13
+  pass: local-v1

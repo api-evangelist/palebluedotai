@@ -1,0 +1,142 @@
+generated: '2026-08-26'
+method: searched
+source: https://api.tokenrouter.com/api/pricing
+name: PaleBlueDot.AI / PBD TokenRouter conformance
+note: >-
+  Cross-cutting and domain standards asserted for the TokenRouter gateway. Every entry
+  cites the exact surface it was read from. Entries marked conforms false are recorded as
+  honest absences, not as penalties.
+standards:
+- id: openai-chat-completions
+  label: OpenAI Chat Completions wire format
+  conforms: true
+  category: domain-standard
+  evidence: >-
+    The provider's own anonymous https://api.tokenrouter.com/api/pricing response declares
+    supported_endpoint.openai = {path: /v1/chat/completions, method: POST}, and 87 of the 132
+    catalogued models list "openai" in supported_endpoint_types. The OpenClaw setup guide
+    instructs users to select "OpenAI-compatible (/chat/completions)" with base URL
+    https://api.tokenrouter.com/v1.
+  source: https://www.tokenrouter.com/docs/openclaw-setup/
+- id: openai-responses
+  label: OpenAI Responses API wire format
+  conforms: true
+  category: domain-standard
+  evidence: 'supported_endpoint.openai-response = {path: /v1/responses, method: POST}; 13 catalogued models declare it.'
+  source: https://api.tokenrouter.com/api/pricing
+- id: anthropic-messages
+  label: Anthropic Messages API wire format
+  conforms: true
+  category: domain-standard
+  evidence: >-
+    supported_endpoint.anthropic and supported_endpoint.anthropic-compatible both =
+    {path: /v1/messages, method: POST}; 16 catalogued models declare one of the two. The Claude
+    Code setup guide sets ANTHROPIC_BASE_URL=https://api.tokenrouter.com and notes the client
+    will request /v1/messages itself.
+  source: https://www.tokenrouter.com/docs/claude-code-setup/
+- id: google-gemini-generatecontent
+  label: Google Gemini generateContent wire format
+  conforms: true
+  category: domain-standard
+  evidence: 'supported_endpoint.gemini = {path: /v1beta/models/{model}:generateContent, method: POST}; 11 catalogued models declare it.'
+  source: https://api.tokenrouter.com/api/pricing
+- id: openai-images-generations
+  label: OpenAI image generation wire format
+  conforms: true
+  category: domain-standard
+  evidence: 'supported_endpoint.image-generation = {path: /v1/images/generations, method: POST}; 4 catalogued models declare it.'
+  source: https://api.tokenrouter.com/api/pricing
+- id: bearer-token-auth
+  label: HTTP Bearer authentication (RFC 6750)
+  conforms: true
+  category: cross-cutting
+  evidence: Authorization Bearer on both the inference and management surfaces; live 401 confirms header requirement.
+  source: https://www.tokenrouter.com/docs/management-api-documentation/
+- id: rfc9457
+  label: RFC 9457 Problem Details for HTTP APIs
+  conforms: false
+  category: cross-cutting
+  evidence: No application/problem+json served. Two proprietary JSON error envelopes are used; many management errors return HTTP 200 with success:false.
+  source: errors/palebluedotai-error-codes.yml
+- id: pagination
+  label: Documented pagination
+  conforms: true
+  category: cross-cutting
+  evidence: page / page_size with total and items on the Management API list endpoints; documented defaults, fallbacks and caps.
+  source: https://www.tokenrouter.com/docs/management-api-documentation/
+- id: idempotency
+  label: Idempotency keys
+  conforms: false
+  category: cross-cutting
+  evidence: No idempotency header or replay semantics documented on any surface.
+  source: conventions/palebluedotai-conventions.yml
+- id: oauth2
+  label: OAuth 2.0
+  conforms: false
+  category: cross-cutting
+  evidence: API-key/bearer only. The gateway's /api/status reports oidc_enabled false, github_oauth false, discord_oauth false.
+  source: https://api.tokenrouter.com/api/status
+- id: oidc
+  label: OpenID Connect
+  conforms: false
+  category: cross-cutting
+  evidence: /.well-known/openid-configuration returns no document on any of the four hosts probed; /api/status reports oidc_enabled false.
+  source: well-known/palebluedotai-well-known.yml
+- id: openapi
+  label: OpenAPI description document
+  conforms: false
+  category: cross-cutting
+  evidence: >-
+    No OpenAPI/Swagger document is published. Probed /openapi.json, /openapi.yaml, /swagger.json,
+    /v1/openapi.json, /api-docs, /docs and /redoc on api.tokenrouter.com, api.palebluedot.ai,
+    www.tokenrouter.com and www.palebluedot.ai - all returned a 401, an SPA shell or an empty body.
+  source: well-known/palebluedotai-well-known.yml
+- id: asyncapi
+  label: AsyncAPI / event surface
+  conforms: false
+  category: cross-cutting
+  evidence: No webhooks, events or streaming callback surface is documented. (SSE token streaming is a response mode of the inference call, not an event API.)
+  source: https://www.tokenrouter.com/docs
+- id: mcp
+  label: Model Context Protocol server
+  conforms: false
+  category: agent
+  evidence: POST tools/list to https://api.tokenrouter.com/mcp returned a 200 with an empty body; www.tokenrouter.com/mcp returned 405; mcp.tokenrouter.com does not resolve.
+  source: mcp/palebluedotai-mcp.yml
+- id: a2a
+  label: A2A Agent Card
+  conforms: false
+  category: agent
+  evidence: /.well-known/agent-card.json and /.well-known/agent.json miss on every host - SPA shell, 401, or empty 200. No card published.
+  source: well-known/palebluedotai-well-known.yml
+domain_standard:
+  market: LLM inference gateway / AI model aggregation
+  formal_standards_body: none
+  formal_standards_body_note: >-
+    This market has no formal domain standard (no SCIM/OData/HL7 equivalent). Its de-facto
+    interoperability standards are the vendor wire formats above, and TokenRouter declares
+    conformance to five of them in a machine-readable form served without authentication.
+    Recorded as reward-only; nothing has been invented to fill the slot.
+  declared_in_contract: true
+  declaration_surface: https://api.tokenrouter.com/api/pricing (supported_endpoint block)
+compliance:
+  published: true
+  scope_warning: >-
+    IMPORTANT - the ISO/IEC 27001, SOC 2 and SOC 3 certifications named on the PaleBlueDot AI
+    Security and Compliance page are held by Digital Realty, the colocation provider, and cover
+    physical infrastructure and facility operations only. They are NOT company-level or
+    platform-level certifications of PaleBlueDot AI or of the TokenRouter software.
+  cross_ref: security/palebluedotai-trust-center.yml
+x-evidence:
+- url: https://api.tokenrouter.com/api/pricing
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://api.tokenrouter.com/api/status
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://www.tokenrouter.com/docs/claude-code-setup/
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://www.tokenrouter.com/docs/openclaw-setup/
+  http_status: 200
+  fetched: '2026-08-26'

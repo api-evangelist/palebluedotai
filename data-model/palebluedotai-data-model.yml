@@ -1,0 +1,127 @@
+generated: '2026-08-26'
+method: derived
+source: https://www.tokenrouter.com/docs/management-api-documentation/
+name: PaleBlueDot.AI / PBD TokenRouter data model
+note: >-
+  Derived from the response payloads published verbatim in the Management API reference and from
+  the anonymous /api/pricing catalogue. There is no OpenAPI components.schemas block to read, so
+  every entity below is transcribed from a documented example response or from a live JSON body.
+  Field types are those the provider's own examples demonstrate.
+entities:
+- name: ApiKey
+  source_surface: GET /api/management/api-keys
+  identifier: key (full plaintext value; masked as sk-abcd**********wxyz on read)
+  internal_ids_exposed: false
+  internal_ids_note: The provider states internal auto-increment ids are never exposed; keys are addressed by their plaintext value.
+  fields:
+  - {name: name, type: string, description: Caller-assigned key label}
+  - {name: key, type: string, description: Masked key value on read; full plaintext required on write}
+  - {name: status, type: integer, description: '1 = enabled, 2 = disabled'}
+  - {name: status_tips, type: string, description: Self-describing legend for status, returned inline}
+  - {name: unlimited_quota, type: boolean, description: When true the key has no spend limit}
+  - {name: unlimited_tips, type: string, description: Self-describing legend for unlimited_quota}
+  - {name: remain_quota, type: number, description: Remaining spendable amount (raw quota / QuotaPerUnit)}
+  - {name: used_quota, type: number, description: Amount already consumed}
+  - {name: expired_time, type: integer, description: '-1 = never expires, otherwise a UTC epoch second'}
+  - {name: expired_time_tips, type: string, description: Self-describing legend for expired_time}
+  - {name: created_time, type: integer, description: UTC epoch seconds}
+- name: Member
+  source_surface: GET /api/management/org/api-keys
+  identifier: email
+  fields:
+  - {name: email, type: string, description: Organization member email; the join key across every org-scoped surface}
+  - {name: api_keys, type: array, description: The member's ApiKey records}
+- name: Wallet
+  source_surface: GET /api/management/self/wallet
+  identifier: implicit (the calling account or its organization)
+  fields:
+  - {name: topUpBalance, type: number, description: Remaining topped-up balance}
+  - {name: voucherEfficientAmount, type: number, description: Currently valid non-expired voucher balance}
+  - {name: toppedUpSpent, type: number, description: Amount consumed from topped-up balance}
+  - {name: voucherSpent, type: number, description: Amount consumed from vouchers}
+  caching: Cached in Redis for 1 minute.
+- name: MemberCredit
+  source_surface: GET /api/management/member/wallet
+  identifier: email (query parameter)
+  fields:
+  - {name: quotaTotal, type: number, description: Total allocated credit for the member's current cycle}
+  - {name: quotaRemaining, type: number, description: Remaining credit}
+  - {name: quotaSpent, type: number, description: Consumed credit (quotaTotal - quotaRemaining)}
+  caching: Cached in Redis for 1 minute.
+  note: A different shape from Wallet - organization members expose a quota cycle, the account itself exposes a balance.
+- name: UsageLogEntry
+  source_surface: GET /api/management/hour/usages and GET /api/management/export/hour/usages
+  identifier: request_id
+  fields:
+  - {name: request_id, type: string, description: Gateway request identifier; matches the X-Tokenrouter-Request-Id response header}
+  - {name: email, type: string, description: Owning member email; empty when it cannot be resolved from the users table}
+  - {name: key_name, type: string, description: Name of the ApiKey that made the call}
+  - {name: model_name, type: string, description: Model identifier, matching Model.model_name in the pricing catalogue}
+  - {name: prompt_tokens, type: integer}
+  - {name: completion_tokens, type: integer}
+  - {name: cache_creation_tokens, type: integer}
+  - {name: cache_tokens, type: integer}
+  - {name: cost, type: number, description: quota / QuotaPerUnit, rounded to 6 decimal places}
+  - {name: created_at, type: integer, description: UTC epoch seconds}
+- name: Model
+  source_surface: https://api.tokenrouter.com/api/pricing (data[])
+  identifier: model_name
+  count: 132
+  fields:
+  - {name: model_name, type: string, description: 'Fully qualified model id, usually vendor-prefixed (for example anthropic/claude-sonnet-4.6)'}
+  - {name: vendor_id, type: integer, description: 'Foreign key into vendors[]'}
+  - {name: tags, type: string, description: 'Comma-separated capability list (Text, Image, Video, Audio)'}
+  - {name: quota_type, type: integer}
+  - {name: model_ratio, type: number, description: Input price multiplier}
+  - {name: completion_ratio, type: number, description: Output price multiplier relative to input}
+  - {name: cache_ratio, type: number, description: Cache-read price multiplier}
+  - {name: create_cache_ratio, type: number, description: Cache-write price multiplier}
+  - {name: model_price, type: number, description: Flat per-request price where used instead of ratios}
+  - {name: enable_groups, type: array, description: Account groups permitted to call this model}
+  - {name: supported_endpoint_types, type: array, description: Wire formats this model accepts}
+  - {name: icon, type: string}
+  - {name: owner_by, type: string}
+- name: Vendor
+  source_surface: https://api.tokenrouter.com/api/pricing (vendors[])
+  identifier: id
+  count: 22
+  fields:
+  - {name: id, type: integer}
+  - {name: name, type: string, description: 'Upstream model provider (OpenAI, Anthropic, Google, DeepSeek, Minimax, ByteDance and others; some names are recorded in Chinese)'}
+  - {name: icon, type: string}
+- name: Organization
+  source_surface: implied by org_id in the Management API authorization rules
+  identifier: org_id
+  fields:
+  - {name: org_id, type: string, description: Present only for enterprise accounts; its absence is what triggers the "you are not currently an enterprise super administrator" error}
+  note: Never returned directly by any documented endpoint; inferred from documented authorization behaviour and marked as such.
+  inferred: true
+relationships:
+- {from: Member, to: ApiKey, type: has_many, via: email}
+- {from: Organization, to: Member, type: has_many, via: org_id}
+- {from: Organization, to: Wallet, type: has_one, via: org_id, note: An enterprise account exposes a single unified organization balance rather than per-member balances.}
+- {from: Member, to: MemberCredit, type: has_one, via: email}
+- {from: ApiKey, to: UsageLogEntry, type: has_many, via: key_name}
+- {from: Member, to: UsageLogEntry, type: has_many, via: email}
+- {from: Model, to: UsageLogEntry, type: has_many, via: model_name}
+- {from: Model, to: Vendor, type: belongs_to, via: vendor_id}
+id_conventions:
+- surface: API keys
+  prefix: sk-
+  note: Keys are both the credential and the addressing identifier on write operations, so a rotation changes the object's identity.
+- surface: Requests
+  field: request_id
+  note: The single join key between a response header, an error message string and a usage-log row.
+- surface: Money
+  note: All monetary values are raw quota units divided by QuotaPerUnit (500000 per USD, published by /api/status). Read-side rounding differs by endpoint - 6 decimal places per record, 4 for a range total.
+modelling_observations:
+- The API returns its own field legends inline (status_tips, unlimited_tips, expired_time_tips) rather than documenting enums in a schema - unusual, and helpful to an agent reading a raw response.
+- There is no customer, project or environment entity; the account/organization pair is the only tenancy boundary.
+- Usage data is only queryable in one-hour windows, so UsageLogEntry has no practical long-range aggregate surface.
+x-evidence:
+- url: https://www.tokenrouter.com/docs/management-api-documentation/
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://api.tokenrouter.com/api/pricing
+  http_status: 200
+  fetched: '2026-08-26'

@@ -1,0 +1,161 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.tokenrouter.com/docs/management-api-documentation/
+name: PaleBlueDot.AI / PBD TokenRouter error catalog
+format: proprietary
+rfc9457: false
+rfc9457_note: >-
+  No application/problem+json is served. Two distinct error envelopes coexist on the same
+  host, which an agent must handle separately.
+envelopes:
+- id: management
+  applies_to: /api/management/* (Management API)
+  content_type: application/json
+  shape: '{"success": false, "message": "<human readable>", "data": null}'
+  machine_readable_code: false
+  gap_note: >-
+    Errors are distinguished only by an English prose message string plus the HTTP status.
+    There is no stable symbolic error code, so an agent must string-match the message.
+- id: inference
+  applies_to: /v1/* (OpenAI/Anthropic/Gemini-compatible inference)
+  content_type: application/json
+  shape: '{"error": {"code": "", "message": "<human readable> (request id: <id>)", "type": "<type>", "param": ""}}'
+  machine_readable_code: true
+  code_note: >-
+    Mirrors the OpenAI error envelope. The code field was observed empty on authentication
+    failures; type carries the classification (api_error, invalid_request_error).
+    The request id is interpolated into the message string rather than exposed as its own field.
+errors:
+- code: null
+  http_status: 401
+  message: No Authorization request header provided
+  envelope: management
+  cause: Missing Authorization header.
+  remediation: Send Authorization Bearer <MANAGEMENT_KEY>.
+  verified_live: true
+- code: null
+  http_status: 401
+  message: management key is invalid
+  envelope: management
+  cause: Key not found or soft-deleted.
+  remediation: Reissue a Management Key from the console.
+- code: null
+  http_status: 403
+  message: management key has been disabled
+  envelope: management
+  cause: Key status is not enabled.
+  remediation: Re-enable the key or issue a new one.
+- code: null
+  http_status: 403
+  message: management key has expired
+  envelope: management
+  cause: Key is past its ExpiresTime.
+  remediation: Issue a new Management Key.
+- code: null
+  http_status: 403
+  message: User has been banned
+  envelope: management
+  cause: The owning user account is not enabled.
+  remediation: Contact support@tokenrouter.com.
+- code: null
+  http_status: 429
+  message: too many requests, please try again later
+  envelope: management
+  cause: Per-endpoint sliding-window limit reached for this management key.
+  remediation: Back off and retry; limits are per (management_key_id, endpoint). No Retry-After header is sent.
+- code: null
+  http_status: 200
+  message: you are not currently an enterprise super administrator
+  envelope: management
+  cause: The calling account has no org_id.
+  remediation: Only enterprise super administrators may call the org endpoints.
+- code: null
+  http_status: 200
+  message: key is required
+  envelope: management
+  cause: Empty key field in the request body.
+  remediation: Send the full plaintext API key.
+- code: null
+  http_status: 200
+  message: api key not found
+  envelope: management
+  cause: Key does not exist or does not belong to the calling account.
+  remediation: Verify the key value and ownership.
+- code: null
+  http_status: 200
+  message: remain_quota is required when not unlimited
+  envelope: management
+  cause: unlimited_quota was not true and remain_quota was omitted.
+  remediation: Supply remain_quota, or set unlimited_quota true.
+- code: null
+  http_status: 200
+  message: remain_quota must be >= 0
+  envelope: management
+  cause: Negative remain_quota.
+  remediation: Send a non-negative quota amount.
+- code: null
+  http_status: 200
+  message: member's email information is missing
+  envelope: management
+  cause: Empty email parameter on the member wallet endpoint.
+  remediation: Supply the member email as a query parameter.
+- code: null
+  http_status: 200
+  message: start_timestamp must not be later than end_timestamp
+  envelope: management
+  cause: Inverted time range on a usage query or export.
+  remediation: Order the bounds correctly.
+- code: null
+  http_status: 200
+  message: time range must not exceed 1 hour
+  envelope: management
+  cause: Usage query or export range wider than one hour.
+  remediation: Page the range into one-hour windows.
+- code: null
+  http_status: 200
+  message: The current requested page size is limited to 3000 items.
+  envelope: management
+  cause: page_size greater than 3000.
+  remediation: Reduce page_size.
+- code: ''
+  http_status: 401
+  message: 'Token not provided'
+  type: api_error
+  envelope: inference
+  cause: No bearer token on an inference call.
+  remediation: Send Authorization Bearer sk-...
+  verified_live: true
+- code: ''
+  http_status: 404
+  message: 'Invalid URL (GET /api/model/list)'
+  type: invalid_request_error
+  envelope: inference
+  cause: Unrouted path on the gateway.
+  remediation: Use a documented endpoint path.
+  verified_live: true
+- code: null
+  http_status: 401
+  message: invalid or missing API key
+  type: authentication_error
+  envelope: inference
+  cause: Observed on the sibling gateway host api.palebluedot.ai for every path.
+  remediation: Supply a valid key; this host exposes no anonymous surface at all.
+  verified_live: true
+soft_error_warning: >-
+  IMPORTANT for agents: a large class of Management API errors is documented as being returned
+  with HTTP 200 and success:false in the body, not with a 4xx status. The CSV export endpoint
+  explicitly returns JSON errors "with HTTP 200 before the CSV stream begins". Status-code-only
+  error handling will silently treat these failures as successes.
+x-evidence:
+- url: https://api.tokenrouter.com/api/management/api-keys
+  http_status: 401
+  fetched: '2026-08-26'
+- url: https://api.tokenrouter.com/v1/models
+  http_status: 401
+  fetched: '2026-08-26'
+- url: https://api.tokenrouter.com/api/model/list
+  http_status: 404
+  fetched: '2026-08-26'
+- url: https://api.palebluedot.ai/
+  http_status: 401
+  fetched: '2026-08-26'

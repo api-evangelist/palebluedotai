@@ -1,0 +1,118 @@
+generated: '2026-08-26'
+method: probed
+source: https://api.tokenrouter.com/api/pricing
+name: PaleBlueDot.AI / PBD TokenRouter plans and pricing
+plan_count: 2
+model: usage-based prepaid balance
+note: >-
+  TokenRouter sells no subscription tiers. The FAQ states plainly that there is no platform
+  fee for Personal or Enterprise software features - console, model catalog, API key
+  management, usage logs, dashboard and enterprise management are all included - and that
+  only model usage is charged, deducted from a prepaid account balance. The two "plans"
+  below are the published editions (Personal and Enterprise), which differ in administration
+  and billing consolidation rather than price.
+machine_readable_pricing:
+  endpoint: https://api.tokenrouter.com/api/pricing
+  http_status: 200
+  authentication: none - served anonymously
+  saved_as: plans/palebluedotai-pricing-endpoint.json
+  fetched: '2026-08-26'
+  note: >-
+    A genuinely machine-readable per-model price catalogue served without a key. This is the
+    provider's most agent-legible surface and is more complete than the rendered /models page.
+  contents:
+    models: 132
+    vendors: 22
+    tiered_pricing_models: 33
+    video_generation_pricing_models: 25
+    image_candidate_pricing_models: 5
+    supported_endpoint_formats: 9
+plans:
+- name: Personal Edition
+  price: 0
+  currency: USD
+  billing_period: none - no recurring software fee
+  target_users: Individual users
+  included:
+  - Unified API key across all listed models
+  - Console, Models catalogue, Chat, API Keys, Usage Logs, Balance, Dashboard
+  - Self-managed account and personal balance
+  - Personal usage and consumption logs
+  quota: Prepaid balance; per-key spend limits configurable via the Management API
+  overage: None - requests fail when balance is exhausted; balance must be topped up
+  limits: Default rate limits apply; custom RPM/TPM only by contacting the business team
+  source: https://www.tokenrouter.com/docs/tokenrouter-feature-guide/
+- name: Enterprise Edition
+  price: null
+  price_note: Not published - no platform fee is charged for enterprise software features per the FAQ; commercial terms for capacity and custom limits are negotiated
+  currency: USD
+  billing_period: none - no recurring software fee
+  target_users: Enterprises / Organizations
+  included:
+  - Centrally managed member accounts administered by organization admins
+  - Unified enterprise balance instead of per-member balances
+  - Team-wide usage logs with member-level detail
+  - Organization-level analytics, usage reporting, budget visibility and audit-friendly records
+  - Management API access to org member API keys and wallets
+  quota: Unified enterprise balance; per-member credit cycles exposed as quotaTotal/quotaRemaining/quotaSpent
+  overage: None - prepaid model
+  limits: Custom RPM and TPM limits available on request
+  source: https://www.tokenrouter.com/docs/faq/
+usage_pricing:
+  unit: per token, with separate input, output, cache-read and cache-write rates
+  also_billed_by: requests, images, videos, audio, reasoning tokens - depending on model type
+  currency_display: USD
+  quota_per_unit: 500000
+  quota_per_unit_note: Internal quota units per 1 USD, published by the provider's /api/status endpoint; cost is computed as quota / QuotaPerUnit
+  tiered_pricing: true
+  tiered_pricing_note: 33 models carry volume-tiered input/output/cache rates that step at a token threshold (for example MiniMax-M3 input 0.30 USD below 512k tokens and 0.60 USD above).
+  free_models: 3
+  free_model_names:
+  - qwen/qwen3.8-max-free
+  - nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  - stealth/ox-alpha
+  platform_fee: none
+  source: https://www.tokenrouter.com/docs/faq/
+model_groups:
+  published:
+  - id: default
+    label: default group
+    ratio: 1
+  - id: vip
+    label: vip group
+    ratio: 1
+  note: >-
+    Price multipliers by account group. Both published groups currently carry a ratio of 1,
+    so no group surcharge or discount is in effect. A third group id, svip, appears in the
+    per-model enable_groups lists but is not present in usable_group.
+promotions:
+- name: Premium Token Credit Program
+  description: 100 builders, startups and enterprises are selected each month to receive free inference credits.
+  price: 0
+  source: https://www.prnewswire.com/news-releases/palebluedot-ai-launches-pbd-tokenrouter-a-unified-platform-for-accessing-ai-models-302749017.html
+top_vendors_by_model_count:
+- {vendor: OpenAI, models: 21}
+- {vendor: Alibaba, models: 17}
+- {vendor: Anthropic, models: 15}
+- {vendor: Google, models: 12}
+- {vendor: Zhipu, models: 10}
+- {vendor: Minimax, models: 9}
+- {vendor: ByteDance, models: 7}
+- {vendor: DeepSeek, models: 6}
+x-evidence:
+- url: https://api.tokenrouter.com/api/pricing
+  http_status: 200
+  content_type: application/json
+  bytes: 62133
+  fetched: '2026-08-26'
+- url: https://api.tokenrouter.com/api/status
+  http_status: 200
+  content_type: application/json
+  fetched: '2026-08-26'
+- url: https://www.tokenrouter.com/models/
+  http_status: 200
+  note: Rendered catalogue; states "Browse 131 currently available AI models and supported API formats."
+  fetched: '2026-08-26'
+- url: https://www.tokenrouter.com/docs/faq/
+  http_status: 200
+  fetched: '2026-08-26'

@@ -1,0 +1,51 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.tokenrouter.com/release-notes/
+name: PaleBlueDot.AI / PBD TokenRouter change log
+scheme: none published
+current_version: null
+current_version_note: >-
+  The gateway advertises X-Tokenrouter-Version on every response, but its value is the
+  placeholder "v0.0.0", so no release identifier is actually exposed. The inference surface
+  is versioned only by path prefix (/v1, /v1beta); the Management API carries no version segment.
+page:
+  url: https://www.tokenrouter.com/release-notes/
+  http_status: 200
+  title: Release Notes
+  strapline: Stay up to date with TokenRouter product updates, new features, and platform improvements.
+  listed_in_sitemap: true
+entry_count: 0
+entries: []
+finding: >-
+  HONEST GAP - TokenRouter publishes a Release Notes page and lists it in its sitemap, but the
+  page contained no dated entries when fetched on 2026-08-26. The surface exists; the content
+  does not yet. No dates, version numbers or change descriptions were found to record, and none
+  have been invented. Treat this as a change log that has been stood up but not populated.
+adjacent_dated_surface:
+  url: https://www.tokenrouter.com/blog
+  http_status: 200
+  post_count_in_sitemap: 20
+  note: >-
+    The blog carries 20 posts but they are product-marketing and comparison articles
+    (for example "tokenrouter-vs-portkey", "is-tokenrouter-compatible-with-the-openai-api"),
+    not release announcements, so they are not a change log substitute.
+deprecation_policy:
+  published: false
+  sunset_header: false
+  note: No deprecation policy, sunset schedule or RFC 8594 Sunset/Deprecation header support is documented.
+status_page:
+  published: false
+  note: >-
+    No status page was found. The gateway's own /api/status configuration response reports
+    uptime_kuma_enabled false, indicating the bundled status-page module is switched off.
+  source: https://api.tokenrouter.com/api/status
+x-evidence:
+- url: https://www.tokenrouter.com/release-notes/
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://www.tokenrouter.com/sitemaps/blog.xml
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://api.tokenrouter.com/api/status
+  http_status: 200
+  fetched: '2026-08-26'

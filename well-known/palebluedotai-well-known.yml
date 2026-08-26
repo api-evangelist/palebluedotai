@@ -1,0 +1,169 @@
+generated: '2026-08-26'
+method: probed
+source: direct HTTPS probe of each host
+name: PaleBlueDot.AI well-known discovery surface
+result: no documents served
+summary: >-
+  All four hosts were probed for the standard /.well-known/ discovery documents plus the
+  A2A agent card at both the current and pre-0.3 paths. NOT ONE returned a real document.
+  Three distinct false-positive shapes were observed and each was rejected on the body, not
+  the status code: www.palebluedot.ai answers 200 with a 49129-byte Astro SPA shell for every
+  unknown path; www.tokenrouter.com answers 200 with a 17089-byte React SPA shell; and
+  api.tokenrouter.com answers 200 with a zero-length body. api.palebluedot.ai answers 401 JSON
+  for every path including /.well-known/*. No WellKnown, APICatalog or SecurityTxt pointer is
+  emitted in apis.yml, because this file records an absence.
+soft_200_note: >-
+  A naive probe reading only status codes would have recorded up to 20 served well-known
+  documents here. All 20 are catch-alls.
+hosts:
+- host: www.palebluedot.ai
+  catch_all_signature: '200 text/html, 49129 bytes, Astro SPA shell (title "PaleBlueDot AI - The Intelligence Platform")'
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+  - path: /.well-known/api-catalog
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+- host: api.palebluedot.ai
+  catch_all_signature: '401 application/json, 84 bytes, ''{"error": {"message": "invalid or missing API key", "type": "authentication_error"}}'''
+  documents:
+  - path: /.well-known/security.txt
+    status: 401
+    file: null
+    served: false
+  - path: /.well-known/openid-configuration
+    status: 401
+    file: null
+    served: false
+  - path: /.well-known/oauth-authorization-server
+    status: 401
+    file: null
+    served: false
+  - path: /.well-known/oauth-protected-resource
+    status: 401
+    file: null
+    served: false
+  - path: /.well-known/api-catalog
+    status: 401
+    file: null
+    served: false
+  - path: /.well-known/ai-plugin.json
+    status: 401
+    file: null
+    served: false
+  - path: /.well-known/agent-card.json
+    status: 401
+    file: null
+    served: false
+  - path: /.well-known/agent.json
+    status: 401
+    file: null
+    served: false
+- host: www.tokenrouter.com
+  catch_all_signature: '200 text/html, 17089 bytes, React SPA shell (title "TokenRouter - Verified Models with Enterprise-Grade Controls")'
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+  - path: /.well-known/api-catalog
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not a document.
+  - path: /.well-known/agent-card.json
+    status: 200
+    file: null
+    served: false
+    note: SPA shell, not an agent card.
+- host: api.tokenrouter.com
+  catch_all_signature: '200 text/html, 0 bytes (empty body)'
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: null
+    served: false
+    note: Empty body, not a document.
+  - path: /.well-known/openid-configuration
+    status: 200
+    file: null
+    served: false
+    note: Empty body, not a document.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: null
+    served: false
+    note: Empty body, not a document.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: null
+    served: false
+    note: Empty body, not a document.
+  - path: /.well-known/api-catalog
+    status: 200
+    file: null
+    served: false
+    note: Empty body, not a document.
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    file: null
+    served: false
+    note: Empty body, not a document.
+  - path: /.well-known/agent-card.json
+    status: 200
+    file: null
+    served: false
+    note: Empty body, not an agent card.
+  - path: /.well-known/agent.json
+    status: 200
+    file: null
+    served: false
+    note: Empty body, not an agent card.
+llms_txt:
+  served: false
+  probed:
+  - url: https://www.palebluedot.ai/llms.txt
+    status: 200
+    served: false
+    note: 200 but the body is the Astro SPA shell, not an llms.txt.
+  - url: https://www.tokenrouter.com/llms.txt
+    status: 200
+    served: false
+    note: 200 but the body is the React SPA shell, not an llms.txt.
+checked: '2026-08-26'

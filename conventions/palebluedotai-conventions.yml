@@ -1,0 +1,167 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.tokenrouter.com/docs/management-api-documentation/
+name: PaleBlueDot.AI / PBD TokenRouter cross-cutting conventions
+note: >-
+  Derived from the published Management API reference and agent-setup guides and confirmed
+  against live responses. No OpenAPI document is published, so nothing here is derived from
+  a machine-readable contract.
+auth_style:
+  scheme: bearer
+  header: Authorization
+  two_credentials: true
+  detail: Inference calls use an sk- prefixed API key; /api/management/* requires a separate Management Key.
+  cross_ref: authentication/palebluedotai-authentication.yml
+idempotency:
+  supported: false
+  status: undocumented
+  header: null
+  detail: >-
+    No idempotency key header, no request-replay semantics and no retry-safety guidance are
+    published anywhere in the documentation. The write surface is small (enable, disable and
+    quota-set on an API key) and all three writes are naturally idempotent by value - setting
+    a key to disabled twice yields the same state - but the provider makes no such guarantee
+    in writing, so this is recorded as undocumented rather than inferred.
+  scored_as: absent
+pagination:
+  style: page-number
+  params:
+  - name: page
+    default: 1
+    fallbacks: [p]
+  - name: page_size
+    default: server default
+    fallbacks: [ps, size]
+    max: 1000
+    max_conflict_note: The parameter table states a max of 1000 while a documented error message cites a 3000-item cap; the two disagree in the provider's own reference.
+  response_fields: [page, page_size, total, items]
+  extra_response_fields:
+  - name: total_cost
+    on: GET /api/management/hour/usages
+    detail: Sum of cost across the whole matched range, not just the current page.
+  cursor: false
+time_range_windows:
+  applies_to:
+  - GET /api/management/hour/usages
+  - GET /api/management/export/hour/usages
+  params: [start_timestamp, end_timestamp]
+  unit: Unix seconds
+  default: last 10 minutes (end = now, start = now - 600)
+  partial_bound_behaviour: the missing bound is filled in (end defaults to now; start defaults to end - 600)
+  max_window: 1 hour
+  detail: A hard one-hour ceiling means any longer usage pull must be paged into hourly windows by the caller.
+field_expansion:
+  supported: false
+sparse_fieldsets:
+  supported: false
+metadata:
+  supported: false
+request_id_tracing:
+  supported: true
+  response_header: X-Tokenrouter-Request-Id
+  also_in: 'Inference error message strings interpolate "(request id: ...)"; usage-log records expose request_id.'
+  verified_live: true
+  detail: Every response observed carried X-Tokenrouter-Request-Id, giving an agent a stable handle to quote in support requests.
+versioning:
+  scheme: path-prefix on the inference surface (/v1, /v1beta for Gemini)
+  management_api_versioned: false
+  management_detail: The /api/management route group carries no version segment.
+  version_header: X-Tokenrouter-Version
+  version_header_observed_value: v0.0.0
+  version_header_note: The advertised version string is the placeholder v0.0.0 on every response, so it carries no usable release information.
+  deprecation_policy: null
+  sunset_header: false
+error_envelope:
+  count: 2
+  detail: Two different envelopes on one host - see errors/palebluedotai-error-codes.yml.
+  rfc9457: false
+  soft_errors: true
+  soft_error_detail: Many Management API failures are returned with HTTP 200 and success:false rather than a 4xx.
+  cross_ref: errors/palebluedotai-error-codes.yml
+rate_limit_signaling:
+  headers: []
+  detail: >-
+    No X-RateLimit-*, RateLimit-* or Retry-After headers were observed. Published limits exist
+    only as a static table in the docs, so an agent cannot read its remaining budget at runtime
+    and must discover exhaustion by receiving a 429.
+  status_on_exhaustion: 429
+  cross_ref: rate-limits/palebluedotai-rate-limits.yml
+dry_run_mode:
+  supported: false
+  status: na
+  detail: No dry-run, preview or validate-only mode is published for any write operation.
+reversibility:
+  grade: documented
+  grade_basis: >-
+    Reversal paths exist and are documented as symmetric operation pairs, but no time window,
+    retention period or point of no return is stated anywhere, so this cannot be graded verified.
+  write_surface: true
+  write_surface_note: The write surface is limited to API key state and spend quota; there is no destructive delete in the published API.
+  operations:
+  - action: Disable an API key
+    endpoint: PUT /api/management/api-keys/disable
+    reversal: Enable an API key
+    reversal_endpoint: PUT /api/management/api-keys/enable
+    reversible: true
+    window: null
+    window_documented: false
+    note: A documented, fully symmetric pair - a disabled key can be re-enabled by the same caller with no stated time limit. Because no window is stated, none is asserted here.
+    source: https://www.tokenrouter.com/docs/management-api-documentation/
+  - action: Set an API key spend quota
+    endpoint: PUT /api/management/api-keys/quota
+    reversal: Call the same endpoint again with the previous values
+    reversal_endpoint: PUT /api/management/api-keys/quota
+    reversible: true
+    window: null
+    window_documented: false
+    note: >-
+      Idempotent by value and self-reversing, but the API returns only the new state and the
+      caller is not given the prior quota in the response, so an agent must read and store the
+      old values via GET /api/management/api-keys before writing if it intends to roll back.
+    source: https://www.tokenrouter.com/docs/management-api-documentation/
+  - action: Account top-up / balance spend
+    endpoint: null
+    reversal: null
+    reversible: false
+    window: null
+    window_documented: false
+    note: >-
+      No refund, void or reversal operation is published for consumed balance or for top-ups.
+      Inference spend is deducted per request and the documentation describes no way to reverse it.
+  - action: Inference request (chat/completions, messages, generateContent, image, video)
+    endpoint: POST /v1/*
+    reversal: null
+    reversible: false
+    window: null
+    window_documented: false
+    note: >-
+      Inference calls are irreversible and billed on completion. There is no cancel endpoint
+      published for in-flight requests. Video generation returns a task id retrievable via
+      GET /video/generations/:task_id, but no cancellation operation is documented for it.
+  unstated_windows_warning: >-
+    NO retention or reversal window is stated by the provider for any operation. Nothing in this
+    file should be read as a guarantee that a reversal will still succeed after any given period.
+data_retention:
+  policy: Zero Data Retention (ZDR)
+  detail: >-
+    The provider states it logs only request metadata - model used, timestamp, cost, token counts,
+    latency, account identifiers, billing records, IP addresses and request headers - and never
+    stores prompt or completion content. Third-party provider-side handling is governed by each
+    upstream provider's own terms.
+  source: https://www.tokenrouter.com/docs/faq/
+routing_semantics:
+  multi_provider_failover: true
+  detail: Requests may be re-routed to an alternative upstream provider when one becomes unavailable or unstable, where supported.
+  caching: Smart caching is offered to reduce token usage; per-model cache_ratio and create_cache_ratio are published in the pricing catalogue.
+  source: https://www.tokenrouter.com/docs/faq/
+x-evidence:
+- url: https://www.tokenrouter.com/docs/management-api-documentation/
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://www.tokenrouter.com/docs/faq/
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://api.tokenrouter.com/api/pricing
+  http_status: 200
+  note: Response headers inspected - X-Tokenrouter-Request-Id and X-Tokenrouter-Version present, no rate-limit headers.
+  fetched: '2026-08-26'

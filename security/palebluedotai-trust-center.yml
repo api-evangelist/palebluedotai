@@ -1,0 +1,83 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.palebluedot.ai/about/
+url: https://www.palebluedot.ai/about/
+name: PaleBlueDot.AI security and compliance
+page_title: Security & Compliance (section of the About Us page)
+corrected_url_note: >-
+  An automated probe initially recorded this artifact at https://www.palebluedot.ai/trust.
+  THAT URL IS A SOFT 404 and has been corrected. Verified 2026-08-26: /trust returns HTTP 200
+  with a body byte-identical to the homepage (49129 bytes), the title "PaleBlueDot AI - The
+  Intelligence Platform" and rel=canonical pointing at "/". The Astro site answers 200 with the
+  homepage for every unknown path, and the homepage itself contains the compliance keywords, so a
+  keyword probe scores a hit on a page that does not exist. The real surface is the Security &
+  Compliance section of the About Us page.
+certifications:
+- name: ISO/IEC 27001
+  holder: Digital Realty
+  scope: Physical infrastructure and facility operations of the colocation data centres
+  held_by_provider: false
+- name: SOC 2
+  holder: Digital Realty
+  scope: Physical infrastructure and facility operations of the colocation data centres
+  held_by_provider: false
+- name: SOC 3
+  holder: Digital Realty
+  scope: Physical infrastructure and facility operations of the colocation data centres
+  held_by_provider: false
+attribution_warning: >-
+  READ THIS BEFORE CITING THE CERTIFICATIONS. None of the certifications above belong to
+  PaleBlueDot AI. The company's own wording is explicit: "Data Center & Facility Compliance
+  (Provided by Digital Realty) - Our primary colocation facilities are provided by Digital Realty.
+  These facilities are certified and maintained under the ISO/IEC 27001 Information Security
+  Management System, and backed by SOC 2 / SOC 3 reports covering physical infrastructure and
+  facility operations." These are the LANDLORD'S facility certifications, inherited by tenancy.
+  No company-level, platform-level or software-level audit of PaleBlueDot AI or of the TokenRouter
+  gateway is claimed or published. Recording these as PaleBlueDot certifications would be a
+  misattribution of the same class the catalogue has been burned by before.
+verification_documents:
+  publicly_available: false
+  process: >-
+    "Verification documents can be made available upon request. For security reasons, we can
+    facilitate access to these materials through our data center provider upon signing an NDA."
+  gate: NDA, and routed through the data centre provider rather than the company.
+provider_stated_commitments:
+- claim: Security and trust come first; platform and operational controls are continually strengthened to provide verifiable protection for enterprise customers.
+  audited: false
+  source: https://www.palebluedot.ai/about/
+- claim: Zero Data Retention (ZDR) - only request metadata is logged; prompts and completions are never stored.
+  audited: false
+  source: https://www.tokenrouter.com/docs/faq/
+  note: A significant and specific commitment, but self-asserted - no third-party attestation of it is published.
+data_processing:
+  dpa_published: true
+  dpa_url: https://www.tokenrouter.com/docs/global-dpa/
+  dpa_title: TOKENROUTER - GLOBAL DATA PROCESSING AGREEMENT
+  http_status: 200
+  note: A published global DPA is a genuine and uncommon compliance artifact for a company at this stage.
+vulnerability_disclosure:
+  published: false
+  bug_bounty: false
+  security_txt: false
+  security_contact: null
+  note: >-
+    PROBED 2026-08-26 - no security.txt on any of the four hosts, no disclosure policy page, and no
+    HackerOne/Bugcrowd/Intigriti programme found. The only published contact is the general
+    support@tokenrouter.com address. No type Security pointer is emitted in apis.yml, because there
+    is no disclosure programme to point at.
+  cross_ref: security/palebluedotai-vulnerability-disclosure.yml (not written - nothing to record)
+x-evidence:
+- url: https://www.palebluedot.ai/about/
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://www.palebluedot.ai/trust
+  http_status: 200
+  served: false
+  note: Soft 404 - byte-identical to the homepage, canonical "/". Rejected.
+  fetched: '2026-08-26'
+- url: https://www.tokenrouter.com/docs/global-dpa/
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://www.tokenrouter.com/docs/faq/
+  http_status: 200
+  fetched: '2026-08-26'

@@ -1,0 +1,101 @@
+generated: '2026-08-26'
+method: searched
+source: https://www.tokenrouter.com/docs/management-api-documentation/
+name: PaleBlueDot.AI / PBD TokenRouter rate limits
+limit_count: 10
+note: >-
+  TokenRouter publishes an unusually precise per-endpoint rate-limit table for its
+  Management API: the limiter is keyed on (management_key_id, endpoint), so each endpoint
+  is counted independently and exhausting one does not block the others for the same key.
+  A Redis backend gives a sliding window; otherwise an in-process limiter with the same
+  thresholds is used. No numeric RPM/TPM limits are published for the inference API.
+enforcement:
+  limiter: ManagementKeyRateLimit
+  applied: immediately after authentication
+  key: (management_key_id, endpoint)
+  algorithm: sliding window when a Redis backend is enabled, otherwise an in-process limiter with identical thresholds
+  independent_per_endpoint: true
+rate_limits:
+- scope: per-management-key per-endpoint
+  endpoint: GET /api/management/api-keys
+  limit: 10
+  window: 60s
+- scope: per-management-key per-endpoint
+  endpoint: GET /api/management/org/api-keys
+  limit: 10
+  window: 60s
+- scope: per-management-key per-endpoint
+  endpoint: PUT /api/management/api-keys/enable
+  limit: 10
+  window: 60s
+- scope: per-management-key per-endpoint
+  endpoint: PUT /api/management/api-keys/disable
+  limit: 10
+  window: 60s
+- scope: per-management-key per-endpoint
+  endpoint: PUT /api/management/api-keys/quota
+  limit: 10
+  window: 60s
+- scope: per-management-key per-endpoint
+  endpoint: GET /api/management/self/wallet
+  limit: 10
+  window: 60s
+- scope: per-management-key per-endpoint
+  endpoint: GET /api/management/member/wallet
+  limit: 10
+  window: 60s
+- scope: per-management-key per-endpoint
+  endpoint: GET /api/management/export/hour/usages
+  limit: 2
+  window: 60s
+- scope: per-management-key per-endpoint
+  endpoint: GET /api/management/hour/usages
+  limit: 60
+  window: 60s
+- scope: per-management-key per-endpoint
+  endpoint: (default - any other /api/management endpoint)
+  limit: 60
+  window: 60s
+  is_default: true
+exhaustion:
+  status_code: 429
+  message: 'too many requests, please try again later'
+  secondary:
+    status_code: 401
+    message: management key is invalid
+    cause: Limiter ran without a valid management_key_id in context (auth middleware bypassed).
+response_headers:
+  documented: []
+  observed: []
+  observed_note: >-
+    PROBED 2026-08-26 - no X-RateLimit-*, RateLimit-* or Retry-After headers were present
+    on any unauthenticated response from api.tokenrouter.com (200 and 401 alike). The only
+    custom response headers observed were X-Tokenrouter-Request-Id and X-Tokenrouter-Version.
+    An agent therefore gets no runtime budget signal and must handle 429 reactively.
+  gap: true
+inference_api_limits:
+  published_numbers: false
+  note: >-
+    The FAQ states that custom RPM (requests per minute) and TPM (tokens per minute)
+    limits are available for enterprise and high-volume customers via the Contact Us form,
+    and that higher limits depend on selected models, provider capacity, usage patterns and
+    commercial terms. No default RPM/TPM figures are published for self-serve accounts.
+  source: https://www.tokenrouter.com/docs/faq/
+other_limits:
+- surface: GET /api/management/hour/usages
+  constraint: query time range must not exceed 1 hour (inclusive); defaults to the last 10 minutes
+- surface: GET /api/management/hour/usages
+  constraint: page_size max 1000 (a separate documented error cites a 3000-item cap)
+- surface: GET /api/management/export/hour/usages
+  constraint: export time range must not exceed 1 hour
+x-evidence:
+- url: https://www.tokenrouter.com/docs/management-api-documentation/
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://www.tokenrouter.com/docs/faq/
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://api.tokenrouter.com/api/pricing
+  http_status: 200
+  note: Response headers inspected for rate-limit signalling; none present.
+  fetched: '2026-08-26'

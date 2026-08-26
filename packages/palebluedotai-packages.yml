@@ -1,0 +1,107 @@
+generated: '2026-08-26'
+method: searched
+source: npm, PyPI and GitHub registry search
+name: PaleBlueDot.AI / PBD TokenRouter client packages
+official_package_count: 0
+finding: >-
+  NO first-party client library was found for PaleBlueDot AI or PBD TokenRouter on any registry.
+  The documented integration path is configuration rather than a package: developers point an
+  existing OpenAI, Anthropic or Gemini client at https://api.tokenrouter.com/v1 (or
+  https://api.tokenrouter.com for Anthropic Messages) and supply an sk- key. Because the gateway
+  is wire-compatible with three major vendor APIs, those vendors' own SDKs are the de facto client
+  libraries and TokenRouter ships none of its own.
+namesake_warning: >-
+  CRITICAL - DO NOT ATTRIBUTE. The npm package "tokenrouter" and the PyPI package "tokenrouter"
+  both describe themselves as the "Official SDK for TokenRouter - the OpenAI-compatible AI gateway",
+  but they belong to a DIFFERENT company. Their own metadata points at tokenrouter.io, not
+  PaleBlueDot's tokenrouter.com: the npm maintainer is tokenrouter-admin <support@tokenrouter.io>,
+  the README links to https://tokenrouter.io, and the PyPI project_urls give Homepage
+  https://tokenrouter.io and Documentation https://docs.tokenrouter.io. PaleBlueDot AI's own
+  documentation never references either package, and its own GitHub organisation is
+  TokenRouter-Tools. These packages were checked and REJECTED; recording them as first-party would
+  credit PaleBlueDot with SDKs it does not publish.
+packages: []
+rejected_candidates:
+- name: tokenrouter
+  registry: npm
+  version: 2.0.0
+  published: '2026-08-07'
+  official: false
+  rejected_reason: Belongs to tokenrouter.io (maintainer support@tokenrouter.io, README links tokenrouter.io) - a different company from PaleBlueDot's tokenrouter.com.
+  url: https://www.npmjs.com/package/tokenrouter
+- name: tokenrouter
+  registry: pypi
+  version: 2.0.0
+  published: null
+  published_note: Release date not read; the package was rejected on ownership before currency mattered.
+  official: false
+  rejected_reason: project_urls give Homepage https://tokenrouter.io and Documentation https://docs.tokenrouter.io - a different company.
+  url: https://pypi.org/project/tokenrouter/
+- name: '@tokenrouter/sdk'
+  registry: npm
+  version: 1.0.6
+  published: '2025-09-03'
+  official: false
+  rejected_reason: Same tokenrouter.io lineage, and predates the April 2026 launch of PBD TokenRouter.
+  url: https://www.npmjs.com/package/@tokenrouter/sdk
+- name: palebluedot
+  registry: pypi
+  version: 0.1.0
+  published: null
+  official: false
+  rejected_reason: Empty placeholder package - no summary, no author, no project URLs, no link to the company. Name squat or abandoned stub, not a first-party SDK.
+  url: https://pypi.org/project/palebluedot/
+- name: pi-tokenrouter
+  registry: npm
+  version: 1.3.1
+  published: '2026-08-17'
+  official: false
+  rejected_reason: Third-party community provider extension for the "pi" coding agent (github.com/liaowang11); not published by the provider.
+- name: nvicode
+  registry: npm
+  version: 0.1.22
+  published: '2026-08-13'
+  official: false
+  rejected_reason: Third-party tool that routes Claude Code, Codex and OpenClaw through gateways; not published by the provider.
+first_party_repositories:
+- org: TokenRouter-Tools
+  url: https://github.com/TokenRouter-Tools
+  http_status: 200
+  repo_count: 1
+  repos:
+  - name: codex-inject
+    url: https://github.com/TokenRouter-Tools/codex-inject
+    language: Shell
+    description: null
+    last_pushed: '2026-07-13'
+    registry: none
+    version: null
+    published: null
+    version_note: >-
+      Not a registry package. It is an install shell script consumed by curl piping directly from
+      raw.githubusercontent.com main - an UNPINNED distribution, so a consumer cannot tell which
+      revision they are executing. Referenced by the Codex/ChatGPT setup guide as
+      "curl -fsSL https://raw.githubusercontent.com/TokenRouter-Tools/codex-inject/main/install.sh | bash -s -- <YOUR_API_KEY>".
+    official: true
+    note: The only first-party code artifact found, and it is an installer rather than a client library.
+sdk_note: >-
+  No type SDKs pointer is emitted in apis.yml because no official client library exists.
+  Emitting one would fire the sdk_count check for libraries the provider does not ship.
+community_integrations_documented_by_provider:
+- {tool: Claude Code, method: ANTHROPIC_BASE_URL environment variable, doc: 'https://www.tokenrouter.com/docs/claude-code-setup/'}
+- {tool: Codex / ChatGPT, method: first-party codex-inject installer script, doc: 'https://www.tokenrouter.com/docs/setup-tokenrouter-in-codex-chatgpt/'}
+- {tool: OpenClaw, method: custom provider configuration, doc: 'https://www.tokenrouter.com/docs/openclaw-setup/'}
+- {tool: ZCode, method: custom model provider configuration, doc: 'https://www.tokenrouter.com/docs/zcode-setup/'}
+x-evidence:
+- url: https://registry.npmjs.org/tokenrouter
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://pypi.org/pypi/tokenrouter/json
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://pypi.org/pypi/palebluedot/json
+  http_status: 200
+  fetched: '2026-08-26'
+- url: https://api.github.com/orgs/TokenRouter-Tools/repos
+  http_status: 200
+  fetched: '2026-08-26'

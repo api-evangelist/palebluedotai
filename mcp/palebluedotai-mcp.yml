@@ -1,0 +1,61 @@
+generated: '2026-08-26'
+method: probed
+source: direct probe of every candidate MCP endpoint
+name: PaleBlueDot.AI / PBD TokenRouter MCP
+status: none
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: probed
+finding: >-
+  PaleBlueDot AI ships NO MCP server - neither a remote endpoint nor a local stdio package.
+  This is a notable gap for an agent-infrastructure company: TokenRouter's own documentation is
+  built around agent clients (Claude Code, Codex/ChatGPT, OpenClaw, ZCode), and the company markets
+  a "Dot-1.1 AI Cloud Agent", yet the platform exposes no MCP surface of its own. No type MCPServer
+  pointer is emitted in apis.yml, because emitting one would assert an agent surface that does not exist.
+probes:
+- url: https://api.tokenrouter.com/mcp
+  method: POST
+  body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  accept: application/json, text/event-stream
+  http_status: 200
+  content_type: text/html
+  bytes: 0
+  result: miss
+  note: Empty body - this host answers 200 with zero bytes for any unrouted path, so this is a catch-all, not an MCP server.
+- url: https://www.tokenrouter.com/mcp
+  method: POST
+  http_status: 405
+  result: miss
+  note: Method Not Allowed from the static site host.
+- url: https://mcp.tokenrouter.com/mcp
+  method: POST
+  http_status: null
+  result: miss
+  note: 'Host does not resolve (DNS NXDOMAIN).'
+- url: https://api.palebluedot.ai/mcp
+  method: GET
+  http_status: 401
+  result: miss
+  note: The sibling gateway host returns its blanket authentication error for every path.
+oauth_discovery:
+  probed: true
+  documents_found: 0
+  note: /.well-known/oauth-authorization-server and /.well-known/oauth-protected-resource returned no document on any host - see well-known/palebluedotai-well-known.yml.
+candidate_tools_note: >-
+  A candidate tool list has deliberately NOT been derived. The pipeline permits deriving candidates
+  from an OpenAPI document, and this provider publishes none - the Management API is described only
+  in prose, so any tool schemas would be transcription rather than derivation. The nine documented
+  Management API operations in errors/ and data-model/ are the natural basis should the provider
+  ever ship a server.
+tool_crosswalk:
+  emitted: false
+  reason: A crosswalk requires an MCP or GraphQL surface plus an OpenAPI to bind against. Neither side exists here.
+agent_readiness_note: >-
+  The practical agent story for this provider is inverse to most catalogue entries: it is not
+  callable BY agents through MCP, it is the token supply UNDER agents. Its documented integrations
+  are base-URL swaps in agent CLIs rather than tools an orchestrator can discover.
+checked: '2026-08-26'
