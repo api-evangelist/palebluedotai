@@ -11,6 +11,17 @@ description: 'PaleBlueDot AI is a Palo Alto, California headquartered AI compute
   Zero Data Retention policy on top of those models, and publishes a documented Management
   API for API key, quota, wallet and usage-log administration. The TokenRouter platform
   is operated by Artemis Tokenrouter Inc.'
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.palebluedot.ai/figma/pbd-home/logo.png
 url: https://raw.githubusercontent.com/api-evangelist/palebluedotai/refs/heads/main/apis.yml
 x-type: company
