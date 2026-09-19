@@ -47,7 +47,7 @@ modified: '2026-08-26'
 tags:
 - Artificial Intelligence
 - Machine-Learning
-- Large Language Models
+- LLM
 - Inference
 - API Gateway
 - GPU
@@ -78,6 +78,10 @@ apis:
   humanURL: https://www.tokenrouter.com/docs/tokenrouter-feature-guide/
   baseURL: https://api.tokenrouter.com/v1
   tags:
+  - Inference
+  - LLM
+  - API Gateway
+  tags_raw:
   - Inference
   - Large Language Models
   - API Gateway
