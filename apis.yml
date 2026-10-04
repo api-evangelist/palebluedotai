@@ -46,7 +46,7 @@ created: '2026-08-26'
 modified: '2026-08-26'
 tags:
 - Artificial Intelligence
-- Machine-Learning
+- Machine Learning
 - LLM
 - Inference
 - API Gateway
@@ -66,6 +66,7 @@ tags_raw:
 - Model Routing
 - Compute
 - Company
+- Machine-Learning
 apis:
 - name: PBD TokenRouter Inference API
   description: 'OpenAI-, Anthropic- and Gemini-compatible inference gateway. One API
